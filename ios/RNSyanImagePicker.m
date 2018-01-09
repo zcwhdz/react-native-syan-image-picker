@@ -99,14 +99,6 @@ RCT_REMAP_METHOD(asyncShowImagePicker,
               } else {
                   NSLog(@"保存压缩图片失败");
               }
-             NSData *imageData = UIImageJPEGRepresentation(photos[0], 0.2);
-                if ([imageData writeToFile:filePath atomically:YES]) {
-                    photo[@"uri"] = filePath;
-                    NSString *base64Encoded = [imageData base64EncodedStringWithOptions:0];
-                    photo[@"baseData"] = base64Encoded;
-                } else {
-                    NSLog(@"保存压缩图片失败");
-                }
               [selectedPhotos addObject:photo];
 
         } else {
