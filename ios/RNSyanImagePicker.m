@@ -94,13 +94,12 @@ RCT_REMAP_METHOD(asyncShowImagePicker,
               NSData *imageData = UIImageJPEGRepresentation(photos[0], 0.2);
               NSString *base64Encoded = [imageData base64EncodedStringWithOptions:0];
               photo[@"baseData"] = base64Encoded;
-              if (imageData writeToFile:filePath atomically:YES]) {
+              if ([imageData writeToFile:filePath atomically:YES]) {
                   photo[@"uri"] = filePath;
               } else {
                   NSLog(@"保存压缩图片失败");
               }
               [selectedPhotos addObject:photo];
-
         } else {
             [infos enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
                 NSMutableDictionary *photo = [NSMutableDictionary dictionary];
