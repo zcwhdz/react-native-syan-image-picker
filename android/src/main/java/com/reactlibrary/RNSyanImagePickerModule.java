@@ -4,6 +4,7 @@ package com.reactlibrary;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.util.Base64;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
@@ -18,13 +19,19 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.luck.picture.lib.PictureSelector;
-import com.luck.picture.lib.compress.Luban;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
 
@@ -141,6 +148,7 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
                             aImage.putDouble("height", options.outHeight);
                             aImage.putString("type", "image");
                             aImage.putString("uri", "file://" + media.getPath());
+                            aImage.putString("baseData",getBase64StringFromFile(media.getPath()));
                         } else {
                             // 压缩过，取 media.getCompressPath();
                             BitmapFactory.decodeFile(media.getCompressPath(), options);
@@ -148,6 +156,7 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
                             aImage.putDouble("height", options.outHeight);
                             aImage.putString("type", "image");
                             aImage.putString("uri", "file://" + media.getCompressPath());
+                            aImage.putString("baseData",getBase64StringFromFile(media.getCompressPath()));
                         }
 
                         if (media.isCut()) {
@@ -167,6 +176,32 @@ public class RNSyanImagePickerModule extends ReactContextBaseJavaModule {
         }
     };
 
+    private String getBase64StringFromFile(String absoluteFilePath) {
+        InputStream inputStream;
+
+        try {
+            inputStream = new FileInputStream(new File(absoluteFilePath));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        byte[] bytes;
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        try {
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                output.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        bytes = output.toByteArray();
+        return Base64.encodeToString(bytes, Base64.NO_WRAP);
+    }
     /**
      * 选择照片成功时触发
      *

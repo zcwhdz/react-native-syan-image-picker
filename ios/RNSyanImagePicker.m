@@ -91,12 +91,22 @@ RCT_REMAP_METHOD(asyncShowImagePicker,
             
               NSString *fileName = [NSString stringWithFormat:@"%d.jpg", arc4random() % 10000000];
               NSString *filePath = [NSString stringWithFormat:@"%@/tmp/%@", NSHomeDirectory(), fileName];
-              if ([UIImageJPEGRepresentation(photos[0], 0.9) writeToFile:filePath atomically:YES]) {
+              NSData *imageData = UIImageJPEGRepresentation(photos[0], 0.2);
+              NSString *base64Encoded = [imageData base64EncodedStringWithOptions:0];
+              photo[@"baseData"] = base64Encoded;
+              if (imageData writeToFile:filePath atomically:YES]) {
                   photo[@"uri"] = filePath;
               } else {
                   NSLog(@"保存压缩图片失败");
               }
-            
+             NSData *imageData = UIImageJPEGRepresentation(photos[0], 0.2);
+                if ([imageData writeToFile:filePath atomically:YES]) {
+                    photo[@"uri"] = filePath;
+                    NSString *base64Encoded = [imageData base64EncodedStringWithOptions:0];
+                    photo[@"baseData"] = base64Encoded;
+                } else {
+                    NSLog(@"保存压缩图片失败");
+                }
               [selectedPhotos addObject:photo];
 
         } else {
@@ -108,7 +118,10 @@ RCT_REMAP_METHOD(asyncShowImagePicker,
               
                 NSString *fileName = [NSString stringWithFormat:@"%d.jpg", arc4random() % 10000000];
                 NSString *filePath = [NSString stringWithFormat:@"%@/tmp/%@", NSHomeDirectory(), fileName];
-                if ([UIImageJPEGRepresentation(photos[idx], 0.9) writeToFile:filePath atomically:YES]) {
+                NSData *imageData = UIImageJPEGRepresentation(photos[idx], 0.2);
+                NSString *base64Encoded = [imageData base64EncodedStringWithOptions:0];
+                photo[@"baseData"] = base64Encoded;
+                if ([imageData writeToFile:filePath atomically:YES]) {
                     photo[@"uri"] = filePath;
                 } else {
                     NSLog(@"保存压缩图片失败");
